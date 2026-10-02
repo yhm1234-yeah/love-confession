@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ff8fab">
+<title>我们的爱情小故事 💕</title>
+<style>
+/* =========================================================
+   情侣告白闯关 · 单文件页面
+   主色调：淡粉 / 浅白 / 浅玫红
+   ========================================================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pink-50:#fff6f9;
+  --pink-100:#ffe9f1;
+  --pink-200:#ffd6e4;
+  --rose:#ff6b95;
+  --rose-deep:#e8437a;
+  --rose-light:#ff9ebb;
+  --ink:#7a4456;
+  --ink-soft:#a87086;
+  --card-bg:rgba(255,255,255,.86);
+  --shadow:0 18px 48px -18px rgba(232,67,122,.35);
+}
+html,body{height:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  color:var(--ink);
+  background:linear-gradient(165deg,#fff8fb 0%,#ffeef4 45%,#ffe0ec 100%) fixed;
+  min-height:100dvh;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+/* 柔和的背景光斑 */
+body::before,body::after{
+  content:"";position:fixed;border-radius:50%;filter:blur(70px);
+  z-index:0;pointer-events:none;opacity:.55;
+}
+body::before{width:46vmax;height:46vmax;left:-16vmax;top:-14vmax;
+  background:radial-gradient(circle,#ffc9dd 0%,transparent 70%);}
+body::after{width:42vmax;height:42vmax;right:-14vmax;bottom:-16vmax;
+  background:radial-gradient(circle,#ffd9c9 0%,transparent 70%);}
+
+/* 漂浮爱心背景层 */
+#hearts-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+.float-heart{
+  position:absolute;bottom:-44px;user-select:none;
+  animation:heartRise linear infinite;opacity:0;will-change:transform,opacity;
+}
+@keyframes heartRise{
+  0%{transform:translateY(0) translateX(0) rotate(-12deg);opacity:0;}
+  10%{opacity:.65;}
+  50%{transform:translateY(-55vh) translateX(var(--sway,20px)) rotate(10deg);}
+  90%{opacity:.5;}
+  100%{transform:translateY(-108vh) translateX(calc(var(--sway,20px) * -1)) rotate(-8deg);opacity:0;}
+}
+
+/* 页面容器与切换 */
+main{position:relative;z-index:1;width:100%;}
+.screen{display:none;width:min(92vw,680px);margin:0 auto;padding:36px 0 48px;}
+.screen.active{display:block;animation:screenIn .6s ease both;}
+@keyframes screenIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+
+/* 欢迎页 */
+#screen-welcome{min-height:100dvh;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0;}
+#screen-welcome.active{display:flex;animation:screenIn .7s ease both;}
+.heart-logo{
+  width:96px;height:96px;position:relative;margin-bottom:30px;
+  transform:rotate(45deg);border-radius:18px;
+  background:linear-gradient(135deg,#ff85a8 0%,#ff4f81 100%);
+  box-shadow:0 16px 36px -10px rgba(255,79,129,.65);
+  animation:heartbeat 1.5s ease-in-out infinite;
+}
+.heart-logo::before,.heart-logo::after{
+  content:"";position:absolute;width:96px;height:96px;border-radius:50%;
+  background:inherit;
+}
+.heart-logo::before{top:-48px;left:0;}
+.heart-logo::after{left:-48px;top:0;}
+.heart-halo{
+  position:absolute;top:50%;left:50%;width:150px;height:150px;
+  margin:-75px 0 0 -75px;border-radius:50%;
+  border:2px solid rgba(255,107,149,.35);
+  animation:halo 2.4s ease-out infinite;pointer-events:none;
+}
+@keyframes heartbeat{
+  0%,100%{transform:rotate(45deg) scale(1);}
+  14%{transform:rotate(45deg) scale(1.12);}
+  28%{transform:rotate(45deg) scale(1);}
+  42%{transform:rotate(45deg) scale(1.08);}
+  56%{transform:rotate(45deg) scale(1);}
+}
+@keyframes halo{0%{transform:scale(.6);opacity:.9;}100%{transform:scale(1.7);opacity:0;}}
+.welcome-title{
+  font-size:clamp(26px,7.2vw,38px);font-weight:800;line-height:1.4;
+  background:linear-gradient(120deg,#e8437a,#ff7aa0 55%,#ff9ebb);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:14px;
+}
+.welcome-sub{font-size:clamp(14px,4vw,16px);color:var(--ink-soft);margin-bottom:42px;line-height:2;}
+.btn-main{
+  display:inline-block;border:none;cursor:pointer;
+  font-family:inherit;font-size:17px;font-weight:700;color:#fff;
+  padding:15px 46px;border-radius:999px;letter-spacing:2px;
+  background:linear-gradient(135deg,#ff85a8 0%,#ff4f81 100%);
+  box-shadow:0 12px 28px -8px rgba(255,79,129,.6),inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .2s ease,box-shadow .2s ease;
+  animation:btnFloat 2.2s ease-in-out infinite;
+}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 16px 32px -8px rgba(255,79,129,.7);}
+.btn-main:active{transform:scale(.95);}
+.btn-main:disabled{opacity:.55;cursor:not-allowed;animation:none;}
+@keyframes btnFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
+/* 通用卡片 */
+.card{
+  background:var(--card-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,150,184,.28);
+  border-radius:26px;padding:30px 24px;box-shadow:var(--shadow);
+}
+.level-head{text-align:center;margin-bottom:24px;}
+.level-no{
+  display:inline-block;font-size:13px;font-weight:700;color:#fff;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--rose-light),var(--rose));
+  padding:5px 18px;border-radius:999px;margin-bottom:14px;
+  box-shadow:0 6px 16px -6px rgba(255,107,149,.7);
+}
+.level-title{font-size:20px;font-weight:800;color:var(--rose-deep);}
+.progress{margin-top:12px;font-size:15px;letter-spacing:4px;}
+.progress .ptext{display:block;font-size:12px;color:var(--ink-soft);letter-spacing:1px;margin-top:6px;}
+.question{
+  font-size:clamp(16.5px,4.6vw,19px);font-weight:700;line-height:1.8;
+  text-align:center;margin:6px 0 24px;color:#6d3a4d;
+}
+/* 选项 */
+.options{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.option{
+  font-family:inherit;font-size:16px;color:var(--ink);text-align:left;
+  background:#fff;border:1.5px solid var(--pink-200);border-radius:18px;
+  padding:15px 18px;cursor:pointer;transition:all .22s ease;line-height:1.5;
+}
+.option:hover{border-color:var(--rose-light);background:var(--pink-50);}
+.option .tag{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;margin-right:12px;
+  background:var(--pink-100);color:var(--rose-deep);font-weight:800;font-size:14px;
+  transition:all .22s ease;flex:none;
+}
+.option.selected{
+  border-color:var(--rose);background:linear-gradient(120deg,#fff0f5,#ffe4ee);
+  box-shadow:0 8px 20px -10px rgba(255,79,129,.55);
+}
+.option.selected .tag{background:linear-gradient(135deg,#ff85a8,#ff4f81);color:#fff;}
+.option.correct{border-color:#7bc98f;background:#f0fbf3;}
+.option.correct .tag{background:#7bc98f;color:#fff;}
+.option:disabled{cursor:default;}
+/* 输入框 */
+.answer-input{
+  width:100%;font-family:inherit;font-size:16px;color:var(--ink);
+  border:1.5px solid var(--pink-200);border-radius:18px;
+  padding:16px 18px;outline:none;background:#fff;transition:border-color .2s,box-shadow .2s;
+  margin-bottom:8px;
+}
+.answer-input:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(255,107,149,.15);}
+.answer-input::placeholder{color:#cfa3b4;}
+.tip{
+  display:none;min-height:22px;text-align:center;font-size:14px;
+  color:var(--rose-deep);margin:10px 2px 4px;line-height:1.7;
+}
+.tip.show{display:block;animation:tipIn .35s ease both;}
+@keyframes tipIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+.btn-row{text-align:center;margin-top:18px;}
+.card.shake{animation:shake .45s ease;}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-8px);}40%{transform:translateX(8px);}
+  60%{transform:translateX(-5px);}80%{transform:translateX(5px);}
+}
+.next-step{
+  display:none;text-align:center;margin-top:22px;
+  animation:screenIn .5s ease both;
+}
+.next-step.show{display:block;}
+.next-step p{color:var(--rose-deep);font-weight:700;margin-bottom:14px;font-size:15px;}
+
+/* 爱心绽放层 */
+#burst{
+  position:fixed;inset:0;z-index:99;pointer-events:none;
+  display:none;align-items:center;justify-content:center;
+}
+#burst.show{display:flex;}
+.burst-center{text-align:center;animation:burstPop 1.7s ease both;}
+.burst-center .big{font-size:64px;display:block;animation:heartbeat 1s ease-in-out infinite;}
+.burst-center .txt{
+  display:block;margin-top:10px;font-size:clamp(20px,5.6vw,28px);font-weight:800;
+  color:var(--rose-deep);text-shadow:0 4px 18px rgba(255,255,255,.9);
+}
+.burst-center .sub{display:block;margin-top:8px;font-size:14px;color:var(--ink-soft);}
+@keyframes burstPop{
+  0%{opacity:0;transform:scale(.3);}
+  18%{opacity:1;transform:scale(1.12);}
+  30%{transform:scale(1);}
+  82%{opacity:1;transform:scale(1);}
+  100%{opacity:0;transform:scale(1.05);}
+}
+.burst-heart{
+  position:absolute;left:50%;top:52%;font-size:var(--size,24px);
+  animation:burstFly var(--dur,1.6s) cubic-bezier(.25,.6,.35,1) var(--delay,0s) forwards;
+  opacity:0;
+}
+@keyframes burstFly{
+  0%{transform:translate(-50%,-50%) scale(.4) rotate(0);opacity:0;}
+  12%{opacity:1;}
+  100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.15) rotate(var(--rot));opacity:0;}
+}
+
+/* 终局页 */
+.final-badge{
+  text-align:center;font-size:14px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--rose-light),var(--rose-deep));
+  display:inline-block;padding:7px 22px;border-radius:999px;margin:0 auto 16px;
+  box-shadow:0 10px 22px -10px rgba(232,67,124,.7);
+}
+.final-head{text-align:center;margin-bottom:26px;}
+.final-head h1{
+  font-size:clamp(26px,7.4vw,40px);font-weight:800;line-height:1.4;
+  background:linear-gradient(120deg,#e8437a,#ff7aa0 55%,#ff9ebb);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin:10px 0 8px;
+}
+.final-head .sub{font-size:14px;color:var(--ink-soft);}
+/* 照片区 */
+.gallery{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:26px;}
+.slot{
+  position:relative;border-radius:22px;overflow:hidden;
+  background:linear-gradient(135deg,#ffeef4,#ffdce8);
+  border:2px dashed rgba(255,107,149,.45);
+  aspect-ratio:4/3;box-shadow:var(--shadow);
+}
+.slot.tall{aspect-ratio:3/4;}
+.slot img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;z-index:1;
+}
+.slot-ph{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;z-index:0;
+  color:var(--rose);font-weight:700;font-size:15px;text-align:center;padding:16px;
+}
+.slot-ph .ic{font-size:38px;}
+.slot-ph small{font-weight:400;font-size:12px;color:var(--ink-soft);line-height:1.6;}
+@media(min-width:620px){
+  .gallery{grid-template-columns:1fr 1fr;}
+  .slot.tall{grid-row:span 2;aspect-ratio:auto;min-height:100%;}
+}
+/* 信件 */
+.letter{padding:30px 24px;}
+.letter-title{
+  text-align:center;font-size:24px;font-weight:800;color:var(--rose-deep);
+  margin-bottom:4px;letter-spacing:4px;
+}
+.letter-deco{text-align:center;color:var(--rose-light);letter-spacing:8px;margin:10px 0 24px;font-size:14px;}
+.letter p{
+  font-size:clamp(16px,4.3vw,18px);line-height:2.15;color:#68404f;
+  text-indent:2em;margin-bottom:1.25em;word-break:break-word;
+}
+.letter p:last-child{margin-bottom:0;}
+/* 终局告白大字 */
+.finale{
+  text-align:center;margin:30px 0 8px;padding:38px 20px;
+  border-radius:28px;
+  background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,233,241,.9));
+  border:1px solid rgba(255,150,184,.35);
+  box-shadow:var(--shadow);
+}
+.finale .big-love{
+  display:block;font-size:clamp(22px,6.4vw,34px);font-weight:800;line-height:1.8;
+  background:linear-gradient(120deg,#e8437a,#ff5e8e 60%,#ff8fb0);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:heartbeat 1.8s ease-in-out infinite;
+}
+.finale .big-love .hearts{
+  display:block;margin-top:10px;font-size:clamp(20px,5.8vw,30px);
+  -webkit-text-fill-color:initial;
+}
+.share-row{text-align:center;margin-top:22px;}
+.btn-share{
+  display:inline-flex;align-items:center;gap:8px;
+  border:none;cursor:pointer;font-family:inherit;
+  font-size:15px;font-weight:700;color:var(--rose-deep);
+  background:#fff;border:1.5px solid var(--pink-200);
+  padding:12px 30px;border-radius:999px;
+  box-shadow:0 8px 20px -12px rgba(232,67,124,.5);
+  transition:all .2s ease;
+}
+.btn-share:hover{border-color:var(--rose);background:var(--pink-50);transform:translateY(-2px);}
+.btn-share:active{transform:scale(.95);}
+
+/* 轻提示 toast */
+#toast{
+  position:fixed;left:50%;bottom:44px;transform:translate(-50%,20px);
+  background:rgba(232,67,124,.94);color:#fff;font-size:14px;font-weight:600;
+  padding:12px 22px;border-radius:999px;z-index:200;opacity:0;pointer-events:none;
+  box-shadow:0 12px 30px -8px rgba(232,67,124,.6);
+  transition:opacity .3s ease,transform .3s ease;max-width:86vw;text-align:center;line-height:1.6;
+}
+#toast.show{opacity:1;transform:translate(-50%,0);}
+
+@media(max-width:480px){
+  .card{padding:26px 20px;border-radius:22px;}
+  .letter{padding:26px 20px;}
+  .heart-logo{width:80px;height:80px;border-radius:15px;}
+  .heart-logo::before,.heart-logo::after{width:80px;height:80px;}
+  .heart-logo::before{top:-40px;}
+  .heart-logo::after{left:-40px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- 漂浮爱心背景 -->
+<div id="hearts-bg" aria-hidden="true"></div>
+
+<main>
+
+  <!-- ==================== 首页欢迎页 ==================== -->
+  <section id="screen-welcome" class="screen active">
+    <div class="heart-logo"><span class="heart-halo"></span></div>
+    <h1 class="welcome-title">开启属于我们的<br>爱情小故事</h1>
+    <p class="welcome-sub">四关小小的考验，藏着我对你大大的心意<br>通关之后，有一封只写给你的信 💌</p>
+    <button id="btn-start" class="btn-main" type="button">开始闯关 💕</button>
+  </section>
+
+  <!-- ==================== 关卡页（由 JS 渲染） ==================== -->
+  <section id="screen-level" class="screen">
+    <div class="card" id="level-card"></div>
+  </section>
+
+  <!-- ==================== 最终告白页 ==================== -->
+  <section id="screen-final" class="screen">
+    <div class="final-head">
+      <span class="final-badge">🎉 四关全部通关 · 终局告白已解锁</span>
+      <h1>谢谢你来到我身边</h1>
+      <p class="sub">下面的每一个字，都是我想认认真真对你说的话</p>
+    </div>
+
+    <!-- ========== 照片区域：共3张，直接把下面 img 的 src 换成你的图片地址即可（本地图片路径或网络图片URL都可以） ========== -->
+    <div class="gallery">
+      <!-- 照片位 1（横版）：替换 src 里的地址 -->
+      <div class="slot">
+        <span class="slot-ph"><span class="ic">💌</span>情侣照片 1<small>把 src 替换成你们的合照地址</small></span>
+        <img src="images/photo1.jpeg" alt="我们的合照1" loading="lazy" onerror="this.style.visibility='hidden'">
+      </div>
+      <!-- 照片位 2（竖版）：替换 src 里的地址 -->
+      <div class="slot tall">
+        <span class="slot-ph"><span class="ic">💌</span>情侣照片 2<small>把 src 替换成你们的合照地址</small></span>
+        <img src="images/photo2.jpeg" alt="我们的合照2" loading="lazy" onerror="this.style.visibility='hidden'">
+      </div>
+      <!-- 照片位 3（横版）：替换 src 里的地址 -->
+      <div class="slot">
+        <span class="slot-ph"><span class="ic">💌</span>情侣照片 3<small>把 src 替换成你们的合照地址</small></span>
+        <img src="images/photo3.jpeg" alt="我们的合照3" loading="lazy" onerror="this.style.visibility='hidden'">
+      </div>
+    </div>
+
+    <!-- ========== 小作文正文（与文档原文一致，修改文字直接改这里的 <p> 即可） ========== -->
+    <article class="card letter">
+      <h2 class="letter-title">小作文</h2>
+      <div class="letter-deco">❦ 　 ❦ 　 ❦</div>
+      <p>嘿嘿！知道你期待很久啦宝宝写的比较迟了，有一种被催更的感觉，我是一个灵感枯竭的作者，你让我写小作文我没有反感只是不知道说什么，以前也写过小作文，感觉说过的话再反复说没意思想写点新的不一样的，你没看过的东西，所以我才那样。要说具体为什么这样，感觉就是习惯了和你在一起，不是没有新鲜感而是变成了一种习惯，不是不爱你了而是爱的更深了。</p>
+      <p>我觉得咱俩现在就是你懂我的感受我知道你的雷点，已经足够了解对方，知道互相的范围界限，不会像刚开始一样摸索，所以我们没那么容易吵架啦。其实我觉得开开心心的很好有时候你心情不好想和我闹，我完全可以理解，因为我知道你爱我，我知道你是想和我撒娇让我哄你。我很愿意哄你宝宝尤其是一边搂着你一边哄你你软软的香香的，根本抱不够。</p>
+      <p>你总说我是为了色色才爱你的，但是我不这么认为我认我我是因为爱你才想色色的这个里面被你弄反了宝宝😘，我认为我好爱你我想无时不刻的拥有你哈哈哈哈这是我的想法我总是想拥有你，我觉得这是我的特权，我的特殊待遇。世界上只有我能拥有你只有我能占有你。所以我总是想摸摸你，之前我总是没有边界感的摸你，有时候在上课，有时候在外面。其实我真没意识到不好，但是还是和你再道一次歉对不起宝宝当时没考虑到你的感受，如果非要解释一下为啥那么做嘛，我想应该是我觉得只有我能摸你，即使别人看到了也就只能羡慕我，但是我真的不希望别人看到。我也绝对没有以此事情为荣的意思。我很珍视你宝宝，我真的好爱好爱你。这一段的最后配一张你的性感美照，我真的很喜欢这张</p>
+      <p>接下来说一说以后吧，其实挺不愿意面对这个问题的，咱俩之前也聊过但是也没说出个所以然来，我想差不多是时候了，如果真的不做些准备到时候打我们一个措手不及，可能真的受不了，我想再之前你和我暗示过了你更偏向于回新疆发展而我也不是特别想离开东北，这陷入了尴尬的抉择咱俩总想着要牺牲一个人来成全这对爱情我想这对谁都不公平。但是又想了想或许未来不一定啥样，到时候我想如果你不接着考试的话应该会走校招，五湖四海的哪里都有可能。我想的是无论在哪咱俩都商量商量争取离得越近越好，我不想异地我甚至说讨厌异地，但是又不得不面对它。但是我有信心，我相信你更相信我自己，我们俩度过了风风雨雨我相信我们有能力解决未来的种种问题，我想我们一直在一起，我不想和你分开。我一直把你往家里领不是说想让亲情同化你，绑架你，让你越早的融入我们家然后慢慢的离不开。绝不是这样我只是想在过节的时候也能看到你，也能让你体验一下我们家怎么过的节，绝对不是因为自己的小心眼，我的父母也是他们其实也很满意你甚至往大了说非常满意你，我无论是近的亲戚也好远的亲戚也罢甚至是我叫不上名的村里人，都知道我有一个新疆的女朋友。哈哈哈哈。说了这么多我想表达的就是未来是变动的，我们也可以是变动的。无论怎样我们的心不变就一定有好的结果。</p>
+      <p>不知不觉写了一千多个字了，把我近期所想基本都包含在内了。最后希望我们的爱情能长长久久，身体健健康康长命百岁。身边的家人事业顺顺利利发大财，身体健健康康长命百岁。最后的最后我想说：我爱你老婆（古丽阿依姆·艾合买提）！！！❤️永远爱你❤️</p>
+    </article>
+
+    <!-- 终局大字告白 -->
+    <div class="finale">
+      <span class="big-love">我爱你老婆（古丽阿依姆·艾合买提）！！！
+        <span class="hearts">❤️ 永远爱你 ❤️</span>
+      </span>
+    </div>
+
+    <div class="share-row">
+      <button id="btn-share" class="btn-share" type="button">💞 分享我们的小故事</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- 爱心绽放动画层 -->
+<div id="burst" aria-hidden="true"></div>
+<!-- 轻提示 -->
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   ★ 关卡配置区：题目 / 选项 / 答案都可以直接在这里修改 ★
+   type 说明：
+     "choice"   选择题，answer 填正确选项的序号（从 0 开始）
+     "input"    填空题，answer 填正确文字
+     "password" 密码题，answer 填密码
+   ========================================================= */
+const CONFIG = {
+  levels: [
+    {
+      type: "choice",
+      no: "第 1 关",
+      title: "相遇回忆",
+      question: "我们的故事，最开始是在哪里拉开序幕的呀？",
+      options: ["大学校园里", "朋友的聚会上", "网络上偶然认识", "图书馆的角落"],
+      answer: 0,
+          tip: "再想想嘛～那可是我们故事开始的地方呀 🌸"
+    },
+    {
+      type: "input",
+      no: "第 2 关",
+      title: "专属昵称",
+      question: "我平时最喜欢怎么称呼你？（输入那个甜甜的昵称）",
+      placeholder: "两个字，我每天都挂在嘴边……",
+      answer: "宝宝",
+      tip: "嘿嘿，就是我每天叫你最多的那两个字呀～"
+    },
+    {
+      type: "choice",
+      no: "第 3 关",
+      title: "两个人的小默契",
+      question: "偶尔闹点小别扭的时候，我们最好的和好方式是？",
+      options: ["冷战到底，谁先理谁就输了", "一个抱抱、撒个娇，马上和好", "必须严肃地分出谁对谁错", "发朋友圈吐槽对方"],
+      answer: 1,
+      tip: "提示：我最喜欢一边搂着你、一边哄着你的时候啦～"
+    },
+    {
+      type: "password",
+      no: "第 4 关",
+      title: "爱情密码",
+      question: "输入属于我们的爱情密码，解锁终局告白 💝",
+      placeholder: "密码就藏在“我爱你一生一世”的谐音里",
+      answer: "5201314",   // ★ 想改密码直接改这里
+      tip: "再试一次～密码是“我爱你一生一世”的谐音哦：5201314"
+    }
+  ]
+};
+
+/* ---------- 状态：通关进度自动保存在本地，刷新页面不会丢失 ---------- */
+const STORE_KEY = "love_quest_stage_v1";
+let stage = parseInt(localStorage.getItem(STORE_KEY) || "0", 10); // 0 首页；1~4 关卡；5 终局
+let curLevel = 0;
+let locked = false;
+
+const $ = (s, el) => (el || document).querySelector(s);
+
+function saveStage(v){ stage = v; localStorage.setItem(STORE_KEY, String(v)); }
+
+/* ---------- 屏幕切换 ---------- */
+const screens = ["screen-welcome", "screen-level", "screen-final"];
+function showScreen(id){
+  screens.forEach(sid => {
+    document.getElementById(sid).classList.toggle("active", sid === id);
+  });
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 关卡渲染 ---------- */
+function renderLevel(i){
+  curLevel = i;
+  saveStage(i + 1);
+  locked = false;
+  const lv = CONFIG.levels[i];
+  const card = $("#level-card");
+
+  // 进度爱心
+  let hearts = "";
+  for (let k = 0; k < CONFIG.levels.length; k++){
+    hearts += k <= i ? "❤️" : "🤍";
+  }
+
+  let body = "";
+  if (lv.type === "choice"){
+    body = '<div class="options">' +
+      lv.options.map((op, idx) =>
+        '<button type="button" class="option" data-idx="' + idx + '">' +
+        '<span class="tag">' + String.fromCharCode(65 + idx) + '</span>' + op +
+        '</button>').join("") +
+      '</div>';
+  } else {
+    body = '<input type="text" class="answer-input" id="answer-input" ' +
+      'placeholder="' + (lv.placeholder || "请在这里输入答案") +
+      '" autocomplete="off" enterkeyhint="done">';
+  }
+
+  card.innerHTML =
+    '<div class="level-head">' +
+      '<span class="level-no">' + lv.no + ' · ' + lv.title + '</span>' +
+      '<div class="progress">' + hearts +
+        '<span class="ptext">' + (i + 1) + ' / ' + CONFIG.levels.length + ' 关</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="question">' + lv.question + '</div>' +
+    body +
+    '<div class="tip" id="level-tip"></div>' +
+    '<div class="btn-row" id="btn-submit-row">' +
+      '<button type="button" class="btn-main" id="btn-submit" style="animation:none">提交答案</button>' +
+    '</div>' +
+    '<div class="next-step" id="next-step">' +
+      '<p>💖 回答正确，' + lv.no + ' 闯关成功！</p>' +
+      '<button type="button" class="btn-main" id="btn-next" style="animation:none">' +
+        (i === CONFIG.levels.length - 1 ? '查看终局告白 💌' : '下一关 →') +
+      '</button>' +
+    '</div>';
+
+  // 绑定事件
+  if (lv.type === "choice"){
+    card.querySelectorAll(".option").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (locked) return;
+        card.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      });
+    });
+  } else {
+    const input = $("#answer-input", card);
+    input.focus();
+    input.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+  }
+  $("#btn-submit", card).addEventListener("click", checkAnswer);
+  $("#btn-next", card).addEventListener("click", () => {
+    if (curLevel === CONFIG.levels.length - 1){
+      showFinal();
+    } else {
+      renderLevel(curLevel + 1);
+    }
+  });
+}
+
+/* ---------- 答案校验 ---------- */
+const norm = s => String(s == null ? "" : s).trim().replace(/\s+/g, "").toLowerCase();
+
+function checkAnswer(){
+  if (locked) return;
+  const lv = CONFIG.levels[curLevel];
+  const card = $("#level-card");
+  const tip = $("#level-tip", card);
+  let right = false;
+
+  if (lv.type === "choice"){
+    const sel = card.querySelector(".option.selected");
+    if (!sel) {
+      gentleTip(tip, "先选一个答案哦，我相信你的直觉 💕");
+      return;
+    }
+    const idx = parseInt(sel.dataset.idx, 10);
+    right = idx === lv.answer;
+    if (right){
+      card.querySelectorAll(".option").forEach((b, k) => {
+        b.disabled = true;
+        if (k === lv.answer) b.classList.add("correct");
+      });
+    }
+  } else {
+    const input = $("#answer-input", card);
+    right = norm(input.value) === norm(lv.answer);
+    if (right) input.disabled = true;
+  }
+
+  if (right){
+    locked = true;
+    const isLast = curLevel === CONFIG.levels.length - 1;
+    tip.classList.remove("show");
+    burst(isLast ? "终局告白已解锁" : "闯关成功");
+    $("#btn-submit-row", card).style.display = "none";
+    setTimeout(() => $("#next-step", card).classList.add("show"), 850);
+  } else {
+    gentleTip(tip, lv.tip || "差一点点就对啦，再想一想～");
+    card.classList.remove("shake");
+    void card.offsetWidth; // 重新触发抖动动画
+    card.classList.add("shake");
+  }
+}
+function gentleTip(el, text){
+  el.textContent = "🥰 " + text;
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
+}
+
+/* ---------- 爱心绽放动画 ---------- */
+const BURST_ICONS = ["💖","💕","❤️","💗","🩷","💞"];
+function burst(titleText){
+  const layer = document.getElementById("burst");
+  let html = '<div class="burst-center">' +
+      '<span class="big">💖</span>' +
+      '<span class="txt">' + titleText + '</span>' +
+      '<span class="sub">爱心为你绽放～</span></div>';
+  const n = 30;
+  for (let i = 0; i < n; i++){
+    const icon = BURST_ICONS[i % BURST_ICONS.length];
+    const dx = (Math.random() * 80 - 40).toFixed(1) + "vw";
+    const dy = (-Math.random() * 55 - 18).toFixed(1) + "vh";
+    const size = (Math.random() * 22 + 16).toFixed(0) + "px";
+    const dur = (Math.random() * .8 + 1.2).toFixed(2) + "s";
+    const delay = (Math.random() * .35).toFixed(2) + "s";
+    const rot = (Math.random() * 90 - 45).toFixed(0) + "deg";
+    html += '<span class="burst-heart" style="--dx:' + dx + ';--dy:' + dy +
+      ';--size:' + size + ';--dur:' + dur + ';--delay:' + delay +
+      ';--rot:' + rot + '">' + icon + '</span>';
+  }
+  layer.innerHTML = html;
+  layer.classList.add("show");
+  clearTimeout(burst._t);
+  burst._t = setTimeout(() => layer.classList.remove("show"), 1900);
+}
+
+/* ---------- 终局页 ---------- */
+function showFinal(){
+  saveStage(5);
+  showScreen("screen-final");
+  setTimeout(() => burst("我爱你 ❤️"), 350);
+}
+
+/* ---------- 分享 ---------- */
+async function sharePage(){
+  const data = {
+    title: "我们的爱情小故事 💕",
+    text: "四关小考验，一封写给你的信，来开启我们的爱情闯关吧～",
+    url: location.href
+  };
+  if (navigator.share){
+    try { await navigator.share(data); } catch (e) { /* 用户取消，不提示 */ }
+  } else if (navigator.clipboard && navigator.clipboard.writeText){
+    try {
+      await navigator.clipboard.writeText(location.href);
+      toast("页面链接已复制，快去分享给 TA 吧 💕");
+    } catch (e) {
+      toast("复制浏览器地址栏的链接，就可以分享啦 💕");
+    }
+  } else {
+    toast("复制浏览器地址栏的链接，就可以分享啦 💕");
+  }
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+/* ---------- 背景漂浮爱心 ---------- */
+function makeAmbientHearts(){
+  const box = document.getElementById("hearts-bg");
+  const icons = ["💗","💖","💕","❤️","🩷"];
+  const n = window.innerWidth < 600 ? 9 : 14;
+  let html = "";
+  for (let i = 0; i < n; i++){
+    const left = (Math.random() * 100).toFixed(2) + "%";
+    const size = (Math.random() * 16 + 14).toFixed(0) + "px";
+    const dur = (Math.random() * 9 + 11).toFixed(1) + "s";
+    const delay = (-Math.random() * 18).toFixed(1) + "s";
+    const sway = (Math.random() * 70 - 35).toFixed(0) + "px";
+    const op = (Math.random() * .3 + .35).toFixed(2);
+    html += '<span class="float-heart" style="left:' + left + ';font-size:' + size +
+      ';animation-duration:' + dur + ';animation-delay:' + delay +
+      ';--sway:' + sway + ';opacity:' + op + '">' +
+      icons[i % icons.length] + '</span>';
+  }
+  box.innerHTML = html;
+}
+
+/* ---------- 初始化 ---------- */
+document.getElementById("btn-start").addEventListener("click", () => renderLevel(0));
+document.getElementById("btn-share").addEventListener("click", sharePage);
+makeAmbientHearts();
+
+if (stage >= 5){
+  showFinal();
+} else if (stage >= 1){
+  showScreen("screen-level");
+  renderLevel(stage - 1);
+}
+</script>
+</body>
+</html>
